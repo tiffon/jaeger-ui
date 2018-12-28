@@ -1,13 +1,21 @@
 language: node_js
 node_js:
   - '6'
-cache:
-  directories:
-    - node_modules
+cache: yarn
+env:
+  global:
+    # so the yarn installed in before_install will be used
+    - PATH=$HOME/.yarn/bin:$PATH
+before_install:
+  # update yarn - travis is using an old version
+  # https://yarnpkg.com/en/docs/install#alternatives-stable
+  - curl -o- -L https://yarnpkg.com/install.sh | bash
+install:
+  - yarn install --frozen-lockfile
 script:
-  - npm run lint
-  - npm run coverage
-  - npm run build
+  - yarn lint
+  - yarn coverage
+  - yarn build
 after_success:
-  - npm install -g coveralls
-  - cat coverage/lcov.info | coveralls
+  - yarn global add codecov
+  - codecov
