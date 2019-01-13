@@ -29,6 +29,7 @@ type AccordianLogsProps = {
   isOpen: boolean,
   linksGetter: ?(KeyValuePair[], number) => Link[],
   logs: Log[],
+  onClick?: ?Function,
   onItemToggle: Log => void,
   onToggle: () => void,
   openedItems: Set<Log>,
@@ -36,10 +37,10 @@ type AccordianLogsProps = {
 };
 
 export default function AccordianLogs(props: AccordianLogsProps) {
-  const { isOpen, linksGetter, logs, openedItems, onItemToggle, onToggle, timestamp } = props;
+  const { isOpen, onClick, linksGetter, logs, openedItems, onItemToggle, onToggle, timestamp } = props;
 
   return (
-    <div className="AccordianLogs">
+    <div className="AccordianLogs" onClick={onClick} role="button">
       <a
         className={`AccordianLogs--header ${isOpen ? 'is-open' : ''}`}
         aria-checked={isOpen}
@@ -74,3 +75,7 @@ export default function AccordianLogs(props: AccordianLogsProps) {
     </div>
   );
 }
+
+AccordianLogs.defaultProps = {
+  onClick: undefined,
+};

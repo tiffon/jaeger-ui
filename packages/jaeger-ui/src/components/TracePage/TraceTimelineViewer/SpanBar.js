@@ -23,7 +23,7 @@ import { onlyUpdateForKeys, compose, withState, withProps } from 'recompose';
 import AccordianLogs from './SpanDetail/AccordianLogs';
 
 import type { ViewedBoundsFunctionType } from './utils';
-import type { Span } from '../../../types/trace';
+import type { Span, Log } from '../../../types/trace';
 
 import './SpanBar.css';
 
@@ -32,6 +32,7 @@ type SpanBarProps = {
   hintSide: string,
   label: string,
   onClick: (SyntheticMouseEvent<any>) => void,
+  onDetailLogItemsOpen: (Log[]) => void,
   viewEnd: number,
   viewStart: number,
   getViewedBounds: ViewedBoundsFunctionType,
@@ -59,6 +60,7 @@ function SpanBar(props: SpanBarProps) {
     label,
     hintSide,
     onClick,
+    onDetailLogItemsOpen,
     setLongLabel,
     setShortLabel,
     rpc,
@@ -90,27 +92,40 @@ function SpanBar(props: SpanBarProps) {
           _groupBy(span.logs.map(l => ({ view: getViewedBounds(l.timestamp, l.timestamp), log: l })), v =>
             Math.floor(v.view.start * 100)
           )
-        ).map(v => (
-          <Popover
-            key={v[0].view.start}
-            arrowPointAtCenter
-            overlayClassName="SpanBar--logHint"
-            placement="topLeft"
-            content={
-              <AccordianLogs
-                logs={v.map(l => l.log)}
-                linksGetter={null}
-                isOpen
-                openedItems={new Set([])}
-                onToggle={() => {}}
-                onItemToggle={() => {}}
-                timestamp={traceStartTime}
-              />
-            }
-          >
-            <div className="SpanBar--logMarker" style={{ left: toPercent(v[0].view.start) }} />
-          </Popover>
-        ))}
+        ).map(v => {
+          const logs = v.map(item => item.log);
+          return (
+            <Popover
+              key={v[0].view.start}
+              arrowPointAtCenter
+              overlayClassName="SpanBar--logHint"
+              placement="topLeft"
+              onClick={event => {
+                event.stopPropagation();
+                console.log('po[pover', event);
+                onDetailLogItemsOpen(logs);
+              }}
+              content={
+                <AccordianLogs
+                  onClick={event => {
+                    event.stopPropagation();
+                    console.log('acc', event);
+                    onDetailLogItemsOpen(logs);
+                  }}
+                  logs={logs}
+                  linksGetter={null}
+                  isOpen
+                  openedItems={new Set([])}
+                  onToggle={() => {}}
+                  onItemToggle={() => {}}
+                  timestamp={traceStartTime}
+                />
+              }
+            >
+              <div className="SpanBar--logMarker" style={{ left: toPercent(v[0].view.start) }} />
+            </Popover>
+          );
+        })}
       </div>
       {rpc && (
         <div

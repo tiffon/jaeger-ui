@@ -47,6 +47,7 @@ type VirtualizedTraceViewProps = {
   childrenToggle: string => void,
   currentViewRangeTime: [number, number],
   detailLogItemToggle: (string, Log) => void,
+  detailLogItemsOpen: (string, Log[]) => void,
   detailLogsToggle: string => void,
   detailProcessToggle: string => void,
   detailStates: Map<string, ?DetailState>,
@@ -274,6 +275,7 @@ export class VirtualizedTraceViewImpl extends React.PureComponent<VirtualizedTra
       childrenToggle,
       detailStates,
       detailToggle,
+      detailLogItemsOpen,
       findMatchesIDs,
       spanNameColumnWidth,
       trace,
@@ -314,6 +316,7 @@ export class VirtualizedTraceViewImpl extends React.PureComponent<VirtualizedTra
           isMatchingFilter={isMatchingFilter}
           numTicks={NUM_TICKS}
           onDetailToggled={detailToggle}
+          onDetailLogItemsOpen={detailLogItemsOpen}
           onChildrenToggled={childrenToggle}
           rpc={rpc}
           showErrorIcon={showErrorIcon}

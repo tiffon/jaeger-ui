@@ -53,6 +53,7 @@ export const actionTypes = generateActionTypes('@jaeger-ui/trace-timeline-viewer
   'DETAIL_PROCESS_TOGGLE',
   'DETAIL_LOGS_TOGGLE',
   'DETAIL_LOG_ITEM_TOGGLE',
+  'DETAIL_LOG_ITEMS_OPEN',
   'EXPAND_ALL',
   'EXPAND_ONE',
   'REMOVE_HOVER_INDENT_GUIDE_ID',
@@ -73,6 +74,7 @@ const fullActions = createActions({
   [actionTypes.DETAIL_PROCESS_TOGGLE]: spanID => ({ spanID }),
   [actionTypes.DETAIL_LOGS_TOGGLE]: spanID => ({ spanID }),
   [actionTypes.DETAIL_LOG_ITEM_TOGGLE]: (spanID, logItem) => ({ logItem, spanID }),
+  [actionTypes.DETAIL_LOG_ITEMS_OPEN]: (spanID, logItems) => ({ logItems, spanID }),
   [actionTypes.ADD_HOVER_INDENT_GUIDE_ID]: spanID => ({ spanID }),
   [actionTypes.REMOVE_HOVER_INDENT_GUIDE_ID]: spanID => ({ spanID }),
 });
@@ -211,6 +213,43 @@ function detailLogItemToggle(state, { payload }) {
   return { ...state, detailStates };
 }
 
+function detailLogItemsOpen(state, { payload }) {
+  const { spanID, logItems } = payload;
+  // const logsToOpen = new Set(logItems);
+  const detailStates = new Map(state.detailStates);
+  // const isOpening = !detailStates.has(spanID);
+  const detailState = new DetailState(detailStates.get(spanID));
+  detailStates.set(spanID, detailState);
+  detailState.logs.isOpen = true;
+  detailState.logs.openedItems = new Set(logItems);
+
+  // if (isOpening) {
+  //   detailState = detailState.toggleLogs();
+  // }
+  // logItems.forEach(logItem => {
+  //   if (isOpening || !detailState.logs.openedItems.has(logItem)) {
+  //     detailState = detailState.toggleLogItem(logItem);
+  //   }
+  // });
+  detailStates.set(spanID, detailState);
+  return { ...state, detailStates };
+
+  // if (detailStates.has(spanID)) {
+  //   detailState = detailStates.get(spanID);
+  //   // detailStates.delete(spanID);
+  // } else {
+  //   detailState = new DetailState();
+  // }
+  // detailStates.set(spanID, detailState);
+  // return { ...state, detailStates };
+  // const { spanID, logItem } = payload;
+  // const old = state.detailStates.get(spanID);
+  // const detailState = old.toggleLogItem(logItem);
+  // const detailStates = new Map(state.detailStates);
+  // detailStates.set(spanID, detailState);
+  // return { ...state, detailStates };
+}
+
 function addHoverIndentGuideId(state, { payload }) {
   const { spanID } = payload;
   const newHoverIndentGuideIds = new Set(state.hoverIndentGuideIds);
@@ -241,6 +280,7 @@ export default handleActions(
     [actionTypes.DETAIL_PROCESS_TOGGLE]: detailProcessToggle,
     [actionTypes.DETAIL_LOGS_TOGGLE]: detailLogsToggle,
     [actionTypes.DETAIL_LOG_ITEM_TOGGLE]: detailLogItemToggle,
+    [actionTypes.DETAIL_LOG_ITEMS_OPEN]: detailLogItemsOpen,
     [actionTypes.ADD_HOVER_INDENT_GUIDE_ID]: addHoverIndentGuideId,
     [actionTypes.REMOVE_HOVER_INDENT_GUIDE_ID]: removeHoverIndentGuideId,
   },

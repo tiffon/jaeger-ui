@@ -25,7 +25,7 @@ import SpanBar from './SpanBar';
 import Ticks from './Ticks';
 
 import type { ViewedBoundsFunctionType } from './utils';
-import type { Span } from '../../../types/trace';
+import type { Span, Log } from '../../../types/trace';
 
 import './SpanBarRow.css';
 
@@ -36,6 +36,7 @@ type SpanBarRowProps = {
   isChildrenExpanded: boolean,
   isDetailExpanded: boolean,
   isMatchingFilter: boolean,
+  onDetailLogItemsOpen: (string, Log[]) => void,
   onDetailToggled: string => void,
   onChildrenToggled: string => void,
   numTicks: number,
@@ -70,6 +71,10 @@ export default class SpanBarRow extends React.PureComponent<SpanBarRowProps> {
 
   _detailToggle = () => {
     this.props.onDetailToggled(this.props.span.spanID);
+  };
+
+  _detailLogItemsOpen = (logItems: Log[]) => {
+    this.props.onDetailLogItemsOpen(this.props.span.spanID, logItems);
   };
 
   _childrenToggle = () => {
@@ -161,6 +166,7 @@ export default class SpanBarRow extends React.PureComponent<SpanBarRowProps> {
             viewStart={viewStart}
             viewEnd={viewEnd}
             getViewedBounds={getViewedBounds}
+            onDetailLogItemsOpen={this._detailLogItemsOpen}
             color={color}
             shortLabel={label}
             longLabel={longLabel}
