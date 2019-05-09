@@ -160,6 +160,8 @@ function setOnEdge(edge, _, renderUtils) {
     return {
       // this className will be merged with the className from the <EdgesLayer>
       className: 'is-hovered',
+      // Override the `markerEnd` ID to show the arrow styled with
+      // `.Ddg--edgeMarkerEnd is-hovered`
       markerEnd: renderUtils.getLocalId('hoveredArrow'),
     }
   }
@@ -167,9 +169,14 @@ function setOnEdge(edge, _, renderUtils) {
     return {
       // this className will be merged with the className from the <EdgesLayer>
       className: 'is-marked',
+      // Override the `markerEnd` ID to show the arrow styled with
+      // `.Ddg--edgeMarkerEnd is-marked`
       markerEnd: renderUtils.getLocalId('markedArrow'),
     }
   }
+  // The className will simply be what is specified on the `EdgesLayer`,
+  // "DdgGraph--edge", and the markerEnd will be the default ID for
+  // the markerEnd.
   return null;
 }
 
@@ -183,7 +190,8 @@ function setOnEdge(edge, _, renderUtils) {
 >
   <SvgScope>
     <ArrowMarkerDef
-      // Uses the default local ID for the marker end
+      // Uses the default local ID for the marker end, if `markerEnd={true}`
+      // is present on an `EdgesLayer`, the edge will use this marker.
       className="Ddg--edgeMarkerEnd"
       scaleDampener={0.8}
     />
@@ -193,8 +201,8 @@ function setOnEdge(edge, _, renderUtils) {
       scaleDampener={0.8}
     />
     <ArrowMarkerDef
-      className="Ddg--edgeMarkerEnd is-marked"
       localId="markedArrow"
+      className="Ddg--edgeMarkerEnd is-marked"
       scaleDampener={0.8}
     />
     <NodesLayer render={renderNodeOutline} />
